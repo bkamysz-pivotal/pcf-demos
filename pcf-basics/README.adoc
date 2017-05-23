@@ -1,16 +1,6 @@
-= Lab 8: Deploying to PCF
+= PCF Basics
 
 . If you haven't already, download this git repo and unpack it someplace convenient.
-+
-Lab08 starter project is located here:
-+
-[source, bash]
----------------------------------------------------------------------
-cn-workshop:
-├── labs
-│   ├── lab08
-│   │   ├── spring-music
----------------------------------------------------------------------
 
 +
 This directory contains two prebuilt versions of the spring-music app from
@@ -18,11 +8,11 @@ https://github.com/cloudfoundry-samples/spring-music
 
 == Push the App
 
-. In a terminal, change working directory to *cn-workshop/labs/lab08/spring-music*
+. In a terminal, change working directory to *pcf-demos/pcf-basics*
 +
 [source,bash]
 ---------------------------------------------------------------------
-$ cd <cn-workshop>/labs/lab08/spring-music
+$ cd <pcf-demos>/pcf-basics
 ---------------------------------------------------------------------
 
 . Take a look at the manifest to see how PCF will deploy the app
