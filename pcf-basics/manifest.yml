@@ -1,6 +1,6 @@
 ---
 applications:
-- name: spring-music-blk-newest
+- name: spring-music
   memory: 2G
   random-route: true
   path: spring-music-blue.jar

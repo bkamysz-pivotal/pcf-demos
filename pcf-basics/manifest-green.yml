@@ -1,6 +1,6 @@
 ---
 applications:
-- name: spring-music-blk-new
+- name: spring-music-new
   memory: 1G
   path: spring-music-green.jar
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
