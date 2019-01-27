@@ -9,8 +9,7 @@ resource_types:
 groups:
 - name: release
   jobs:
-    - push-blue
-    - push-green
+    - push-apps
     - map-green-to-blue
     - unmap-blue
     - clean-up
@@ -35,50 +34,45 @@ jobs:
         app_name: spring-music-new
         delete_mapped_routes: true
 
-- name: push-blue
+- name: push-apps
   serial: true
   plan:
   - get: repo
-  - put: push-blue
-    resource: cf-env
-    params:
-      command: push
-      app_name: spring-music
-      hostname: spring-music-((cf-space))
-      memory: 2G
-      path: repo/pcf-basics/spring-music-blue.jar
-      buildpack: https://github.com/cloudfoundry/java-buildpack.git
-      environment_variables:
-        TRUST_CERTS: ((cf-api-uri))
-
-- name: push-green
-  serial: true
-  plan:
-  - get: repo
-    passed: [ push-blue ]
-  - put: push-green
-    resource: cf-env
-    params:
-      command: push
-      app_name: spring-music-new
-      hostname: spring-music-((cf-space))-temp
-      memory: 2G
-      path: repo/pcf-basics/spring-music-green.jar
-      buildpack: https://github.com/cloudfoundry/java-buildpack.git
-      environment_variables:
-        TRUST_CERTS: ((cf-api-uri))
+  - aggregate:
+    - put: push-blue
+      resource: cf-env
+      params:
+        command: push
+        app_name: spring-music
+        hostname: spring-music-((cf-space))
+        memory: 2G
+        path: repo/pcf-basics/spring-music-blue.jar
+        buildpack: https://github.com/cloudfoundry/java-buildpack.git
+        environment_variables:
+          TRUST_CERTS: ((cf-api-uri))
+    - put: push-green
+      resource: cf-env
+      params:
+       command: push
+       app_name: spring-music-new
+       hostname: spring-music-((cf-space))-temp
+       memory: 2G
+       path: repo/pcf-basics/spring-music-green.jar
+       buildpack: https://github.com/cloudfoundry/java-buildpack.git
+       environment_variables:
+         TRUST_CERTS: ((cf-api-uri))
 
 - name: map-green-to-blue
   serial: true
   plan:
   - get: repo
-    passed: [ push-green ]
+    passed: [ push-apps ]
   - put: map-green-to-blue
     resource: cf-env
     params:
       command: map-route
       app_name: spring-music-new
-      domain: cfapps.io
+      domain: ((cf-domain))
       hostname: spring-music-((cf-space))
 
 - name: unmap-blue
@@ -91,7 +85,7 @@ jobs:
     params:
       command: unmap-route
       app_name: spring-music
-      domain: cfapps.io
+      domain: ((cf-domain))
       hostname: spring-music-((cf-space))
 
 - name: clean-up
@@ -99,32 +93,24 @@ jobs:
   plan:
   - get: repo
     passed: [ unmap-blue ]
-  - aggregate:
-    - put: unmap-green-temp
-      resource: cf-env
-      params:
-        command: unmap-route
-        app_name: spring-music-new
-        domain: cfapps.io
-        hostname: spring-music-((cf-space))-temp
-    - put: delete-temp-route
-      resource: cf-env
-      params:
-        command: delete-route
-        domain: cfapps.io
-        hostname: spring-music-((cf-space))-temp
-    - put: delete-blue
-      resource: cf-env
-      params:
-        command: delete
-        app_name: spring-music
-        delete_mapped_routes: true
-    - put: rename-green
-      resource: cf-env
-      params:
-        command: rename
-        app_name: spring-music-new
-        new_app_name: spring-music
+  - put: delete-temp-route
+    resource: cf-env
+    params:
+      command: delete-route
+      domain: ((cf-domain))
+      hostname: spring-music-((cf-space))-temp
+  - put: delete-blue
+    resource: cf-env
+    params:
+      command: delete
+      app_name: spring-music
+      delete_mapped_routes: true
+  - put: rename-green
+    resource: cf-env
+    params:
+      command: rename
+      app_name: spring-music-new
+      new_app_name: spring-music
 
 resources:
 - name: repo

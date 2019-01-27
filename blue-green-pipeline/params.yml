@@ -2,6 +2,7 @@
 git-uri: https://github.com/bkamysz-pivotal/pcf-demos.git
 git-branch: master
 cf-api-uri: https://api.run.pivotal.io
+cf-domain: domain
 cf-username: username
 cf-password: password
 cf-org: org
